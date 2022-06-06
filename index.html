@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>CSC3007 Assignment 1</title>
+</head>
+<style>
+    table, th, td {
+        border: 1px solid black;
+        margin-left: auto;  
+        margin-right: auto;   
+        background-color: floralwhite;
+    }
+    th, td {
+    padding: 15px;
+    text-align: center; 
+    font-family: Arial, Helvetica, sans-serif;
+    }
+</style>
+<body>
+<script>
+
+var request = new XMLHttpRequest();
+
+request.open(
+    "GET",
+    "https://api.data.gov.sg/v1/environment/psi"
+);
+
+request.onload = function() {
+
+    let psiData = JSON.parse(this.response);
+    let updateTimeArray =[];
+    let metricArray = [];
+    let nationalArray = [];
+    let centralArray = [];
+    let westArray = [];
+    let eastArray = [];
+    let northArray = [];
+    let southArray = [];
+    let keys = Object.keys(psiData.items[0].readings)
+    
+    for (i = 0; i < keys.length; i++) 
+    {
+        var update_time = new Date(psiData.items[0].update_timestamp);
+        updateTimeArray.push(update_time.toUTCString())
+        metricArray.push(keys[i]);
+        nationalArray.push(psiData.items[0].readings[keys[i]].national);
+        centralArray.push(psiData.items[0].readings[keys[i]].central);
+        westArray.push(psiData.items[0].readings[keys[i]].west);
+        eastArray.push(psiData.items[0].readings[keys[i]].east);
+        northArray.push(psiData.items[0].readings[keys[i]].north);
+        southArray.push(psiData.items[0].readings[keys[i]].south);
+    }
+
+    let tbleHeaders = ["Metric", "National", "Central", "West", "East", "North", "South", "Time Updated"];
+    var body = document.getElementsByTagName('body')[0];
+    var tbl = document.createElement('table');
+    var tbdy = document.createElement('tbody');
+    let rowHeader = document.createElement("tr");
+  
+    for (i = 0; i < tbleHeaders.length; i++) 
+    {
+        let cell = document.createElement("th");
+        let cellText = document.createTextNode(tbleHeaders[i]);
+        cell.appendChild(cellText);
+        rowHeader.appendChild(cell);
+    }
+    tbdy.appendChild(rowHeader);
+    tbl.appendChild(tbdy);
+    for (i = 0; i < metricArray.length; i++) 
+    {
+        let tr = tbdy.insertRow();
+        let cellMetric = tr.insertCell();
+        let cellNational = tr.insertCell();
+        let cellCentral = tr.insertCell();
+        let cellWest = tr.insertCell();
+        let cellEast = tr.insertCell();
+        let cellNorth= tr.insertCell();
+        let cellSouth= tr.insertCell();
+        let cellTime= tr.insertCell();
+  
+        cellMetric.append(metricArray[i]);
+        cellNational.append(nationalArray[i]);
+        cellCentral.append(centralArray[i]);
+        cellWest.append(westArray[i]);
+        cellEast.append(eastArray[i]);
+        cellNorth.append(northArray[i]);
+        cellSouth.append(southArray[i]);
+        cellTime.append(updateTimeArray[i]);
+      }
+    body.appendChild(tbl);
+};
+request.send();
+
+</script> 
+</body>
+</html>
