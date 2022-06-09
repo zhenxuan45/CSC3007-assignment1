@@ -14,7 +14,9 @@
     text-align: center; 
     font-family: Arial, Helvetica, sans-serif;
     }
+    h2 {text-align: center;}
 </style>
+<h2 id = last_updated></h2>
 <body>
 <script>
 
@@ -26,9 +28,7 @@ request.open(
 );
 
 request.onload = function() {
-
     let psiData = JSON.parse(this.response);
-    let updateTimeArray =[];
     let metricArray = [];
     let nationalArray = [];
     let centralArray = [];
@@ -36,12 +36,14 @@ request.onload = function() {
     let eastArray = [];
     let northArray = [];
     let southArray = [];
-    let keys = Object.keys(psiData.items[0].readings)
-    
+    let keys = Object.keys(psiData.items[0].readings);
+
+    let update_time = new Date(psiData.items[0].update_timestamp);
+    var last_updated = document.getElementById("last_updated");
+    last_updated.innerHTML = "Last Updated: " + update_time.toUTCString()
+
     for (i = 0; i < keys.length; i++) 
     {
-        var update_time = new Date(psiData.items[0].update_timestamp);
-        updateTimeArray.push(update_time.toUTCString())
         metricArray.push(keys[i]);
         nationalArray.push(psiData.items[0].readings[keys[i]].national);
         centralArray.push(psiData.items[0].readings[keys[i]].central);
@@ -51,7 +53,7 @@ request.onload = function() {
         southArray.push(psiData.items[0].readings[keys[i]].south);
     }
 
-    let tbleHeaders = ["Metric", "National", "Central", "West", "East", "North", "South", "Time Updated"];
+    let tbleHeaders = ["Metric", "National", "Central", "West", "East", "North", "South"];
     var body = document.getElementsByTagName('body')[0];
     var tbl = document.createElement('table');
     var tbdy = document.createElement('tbody');
@@ -76,7 +78,6 @@ request.onload = function() {
         let cellEast = tr.insertCell();
         let cellNorth= tr.insertCell();
         let cellSouth= tr.insertCell();
-        let cellTime= tr.insertCell();
   
         cellMetric.append(metricArray[i]);
         cellNational.append(nationalArray[i]);
@@ -85,7 +86,6 @@ request.onload = function() {
         cellEast.append(eastArray[i]);
         cellNorth.append(northArray[i]);
         cellSouth.append(southArray[i]);
-        cellTime.append(updateTimeArray[i]);
       }
     body.appendChild(tbl);
 };
